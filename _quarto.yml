@@ -18,6 +18,7 @@ format:
     css: styles.css
     toc: true
     code-copy: true
+    code-fold: true
     anchor-sections: true
 
 execute:
