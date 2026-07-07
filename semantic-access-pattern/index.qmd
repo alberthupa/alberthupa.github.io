@@ -1,0 +1,310 @@
+---
+title: "Rethinking agents in the age of knowledge graphs"
+description: "A semantic access pattern for moving more agent logic, traceability, and operating guidance into organizational knowledge graphs."
+author: "Albert Hupa"
+date: 2026-07-07
+categories:
+  - AI agents
+  - knowledge graphs
+  - semantic layers
+  - AI sovereignty
+---
+
+## Intro
+
+There is a rising interest in knowledge graphs among companies leveraging GenAI - they are supposed to help AI agents reach organizational knowledge. But agents are not defined by RAG, but by context-aware tools, skills, logic and reasoning on top of it, thrown at LLMs by harnesses. And **moving this agency from LLMs towards knowledge graphs can reveal substantial benefits for organizations**, namely:
+1. logic / reasoning stops being an abstract skill but originates from inside of the organizational knowledge;
+2. it gives organizations more tools for achieving AI sovereignty.
+
+**TLDR: Below are described a few approaches that enrich relations between knowledge graphs and agents: 1. embedding agent operating cards inside business concepts, 2. storing agent traces inside business concepts and 3. making sure that agents' harnesses are thin enough to dynamically follow all possible directions coming from knowledge graphs. But before this deep dive, let's answer the question why for companies this is an actual necessity rather than just another R&D POC.**
+
+Obviously every company wants to accelerate. And the faster you want to accelerate, the more frontier LLMs you must use. And if you use top LLMs you are giving away your knowledge, logic and actions to these models. Namely, you lose your AI sovereignty and risk being replaced by the biggest AI players. If you want to stay independent, you have to move as much of the stack as possible to your premises. This concept is not new. After all, for quite some time Databricks has repeatedly claimed that **companies' data is their biggest asset**. Their whole selling point is built around this idea. More recently Palantir has issued [AI sovereignty manifesto](https://x.com/PalantirTech/status/2072114267776491695), and its second point is: "Data retention is your treasure. Transfer it at your own peril. Your ability to win is dictated by your ability to recognize and use your unique edges, and you keep winning by compounding the underlying data to generate new insights. **Transferring that data hands over access to your pre-existing winning plays and yields the means of production for new ones**".
+
+Data is one thing, but LLMs are another. Not using frontier Anthropic or OpenAI models constrains you a bit - after all we have all been amazed by agents fueled by top models which were equipped with just a handful of tools and context. And when we downsize the model, we see the decrease of agents' capabilities. But first, **there are more and more open-source models with better and better capabilities. And second, the logic and reasoning is actually something you may bring to the table** - in the form of a knowledge graph. And this is what this text is about.
+
+It should be very clear that **the idea that knowledge graphs help remain AI independent, as well as injecting into the graph independent layers of [data, logic and action](https://blog.palantir.com/connecting-ai-to-decisions-with-the-palantir-ontology-c73f7b0a1a72) is advocated by Palantir** - the company which is widely accused of constraining independence of its users (and for this reason it is banned in some European countries). 
+
+One of the dominant **approaches to operationalizing companies' knowledge is to wrap it up in ontologies**, i.e. knowledge graphs which map and organize companies' data and knowledge into a plane usable by AI agents, dashboards and any possible applications (so a semantic layer mapping more data, being in the form of a graph, with organizational constraints and usable by much more than just dashboards if you will). I advocate building your own knowledge graph on Jena, or using Palantir's alternatives, e.g. [Timbr](https://timbr.ai/), [Elementum](https://www.elementum.ai/solutions) or [Atlan](https://atlan.com/).
+
+While ontologies are growing and more and more companies offer diversified solutions, agent architecture does not seem to catch up. Dominant blueprints still seem to assume that static harnesses rely on intelligent LLMs that will have dynamically injected context. **If you want the graph to drive agency, the harness must become dumb.** Routing and step execution are read from graph data; traversal traces should be written back to the graph.
+
+## Close approaches (but not quite)
+
+Skills in a graph are not a new idea. In fact, quite a few approaches have been described. However, **all of them are LLM and agent-centric and keep the harness rather static**. Also - these graphs belong to the agents, not to the organizations. Take a look at a few of them:
+
+* [ArsContexta](https://github.com/agenticnotetaking/arscontexta) - this solution derives local knowledge from conversations with an agent and builds an agent-operable skill graph, i.e. a hierarchical directory structure allowing the agent to enable skills based on a given context
+* [GraphSkills by smithery.ai](https://smithery.ai/skills/Token-Eater/graph-skills) - a solution that takes a skill and operationalizes it as a graph, allowing an agent to operate skills in a much more sophisticated way
+* [The Graph of Skills by SkillInsight](https://skillinsight.io/)  and  [Graph of Skills (GoS) by Dawei Liu](https://github.com/davidliuk/graph-of-skills) - both solutions create a knowledge graph from skills and allow agents to query it during conversations which becomes a skill in itself.
+* [Event-Sourced Reactive Graphs](https://arxiv.org/abs/2605.21997) - where a graph from agents' logs determines the next course of action
+
+Take a look at these texts if you want to read more about them: [Skill Graphs: Networked Knowledge Beats Monolithic Skill Files](https://understandingdata.com/posts/skill-graphs-networked-agent-knowledge/) and [Skill Graphs: The Architecture That Solves the AI Agent Context Window Problem](https://linas.substack.com/p/skill-graphs).
+
+
+## Knowledge graphs
+
+In this approach I assume that the starting point of an organization is to have some context layer enabling the usage of its knowledge for agents. It can have **various forms**:
+* **wiki-style** knowledge repo (Andrej Karpathy described its potential for AI agents on [X](https://x.com/karpathy/status/2039805659525644595) and on [GitHub](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)),
+* **a graph database** for relational graphs representing data layers (like [Neo4j](https://neo4j.com/)),
+* **a knowledge graph** - where a semantic layer in the form of a graph both defines business-wise concepts and relations and serves as an index consumable by APIs, AI agents, etc. (e.g. [Timbr](https://timbr.ai/), [Elementum](https://www.elementum.ai/) or [Atlan](https://atlan.com/))
+* **an ontology** - A knowledge graph with a semantic model underneath: classes, properties, typed relationships, constraints, provenance, rules that infer new facts. (like [Jena](https://jena.apache.org/))
+
+These systems are widely developed by more and more companies, making sure that companies' knowledge is consumable by AI agents. I suggest that if **actual agency should come from it, then the graph** - apart from storing the company's knowledge - should:
+* **serve to agents**: context, tools, logic allowed in a given turn - let's call it an agent operating card,
+* **serve as a traceability** plane, allowing comparison of the company's knowledge with the agent's operating data
+### Business concepts holding agent operating cards
+When designing a knowledge graph, **make sure that apart from business data consumable by data consumption points every concept has operational data for agents**. Let's call it an "agent operating card" (or whatever else). This will hold: 
+* relevant context, caveats,
+* allowed routes / workflows (deterministic or probabilistic),
+* required level of human verification at a given point in time,
+* past evaluation results.
+
+So **an agent operating card is based on intrinsic directives and is generated dynamically for a given user with a given role at a given point in time, from a given context**. For every conversation turn an agent identifies central concepts and generates an operating card guiding the agent in a more or less enforced direction.
+
+### Business concepts holding agent traces
+**Agents' operating history should be just another dimension of business concepts**. Once done with a concept - read, modified, used - an agent stores all relevant information inside this concept's memory. In effect:
+* first of all it is possible to **see which concepts are actually used by AI** and act accordingly - both by increasing their quality for AI and by answering questions like why other concepts are not relevant so far.
+* second, knowing how many and which users used AI agents in given contexts, **AI agents can recommend, for their own purposes or for their users, next best actions** (e.g. following past interactions of users with a given level of trustworthiness in the organization).
+* third, having all the history makes it possible to trace and explain reasons for actions undertaken by the agents, i.e. **recreating chains of actions leading to actions and evaluating their effects**, which in the long term can lead to plausible LLM fine-tuning for next generations of agents.
+
+
+The **effects of evaluations** - either human or LLM-based - should also be stored inside given concept. If that knowledge is at hand:
+- next time the agent comes across a given concept, it can both **inform the user of past evaluations of similar interactions and adjust the level of supervision for foreseeable actions**, e.g. enabling full auto if past evaluations were positive or triggering human in the loop if past evaluations were negative.
+- it is possible to **evaluate whole graphs or subgraphs in terms of helpfulness for AI agents** - because a user can easily list concepts or related workflows with various levels of trustworthiness in terms of AI.
+
+More formally the **agent operating card should have the following inputs**:
+* concept definition
+* required inputs
+* allowed routes
+* approval rules
+* execution steps
+* caveats
+* prior traces / evaluations
+
+
+### Code template for agent operating card...
+
+```json
+  {
+    "node": {
+      "id": "kpi:ConversionRate",
+      "label": "Conversion Rate",
+      "type": "KPI",
+      "definition": "Converted orders divided by eligible sessions."
+    },
+    "turn_context": {
+      "intent": "diagnose_change",
+      "known_inputs": {
+        "market": "PL",
+        "period": "2026-05"
+      },
+      "missing_inputs": ["attribution_model"]
+    },
+    "agent_guidance": [
+      "State the denominator and attribution model.",
+      "Do not compare values across incompatible metric versions."
+    ],
+    "routes": [
+      {
+        "id": "route:conversion_rate.current_value",
+        "description": "Retrieve governed current value.",
+        "access_mode": "auto_if_complete",
+        "required_inputs": ["market", "period"],
+        "sequence": [
+          {
+            "id": "step:query_metric_value",
+            "kind": "deterministic_template",
+            "executor": "bigquery_template",
+            "template_ref": "template:conversion_rate.current_value",
+            "output": "metric_rows"
+          },
+          {
+            "id": "step:summarize",
+            "kind": "sub_prompt",
+            "prompt_ref": "prompt:kpi_value_summary",
+            "input": "metric_rows"
+          }
+        ]
+      },
+      {
+        "id": "route:conversion_rate.diagnose_change",
+        "description": "Diagnose movement by channel and funnel stage.",
+        "access_mode": "agent_selectable",
+        "required_inputs": ["market", "period", "attribution_model"],
+        "sequence": [
+          {
+            "id": "step:query_breakdown",
+            "kind": "deterministic_template",
+            "executor": "bigquery_template",
+            "template_ref": "template:conversion_rate.breakdown",
+            "output": "breakdown_rows"
+          },
+          {
+            "id": "step:interpret_drivers",
+            "kind": "sub_agent",
+            "agent_ref": "agent:kpi_diagnosis",
+            "input": "breakdown_rows"
+          }
+        ]
+      },
+      {
+        "id": "route:conversion_rate.change_definition",
+        "description": "Prepare a metric definition change request.",
+        "access_mode": "approval_required",
+        "required_inputs": ["metric_owner", "proposed_change"],
+        "sequence": [
+          {
+            "id": "step:create_change_request",
+            "kind": "deterministic_template",
+            "executor": "workflow_action",
+            "template_ref": "template:metric_definition_change_request"
+          }
+        ]
+      }
+    ],
+    "memory": {
+      "relevant_trace_refs": ["trace:123", "trace:456"],
+      "prior_failures": ["Missing attribution model caused ambiguous diagnosis."]
+    },
+    "restrictions": [
+      "No arbitrary SQL.",
+      "No graph writes except approved audit or workflow routes.",
+      "Policy is changed only by controlled graph update, not by trace history."
+    ]
+  }
+
+```
+
+## Harnesses 
+
+LLMs must be thrown at these ontologies somehow - obviously through **harnesses, i.e. programmatic loops allowing for selecting tools** (and some of these tools should allow for interactions with the environment). Let's just enumerate their types, so that we level our understanding of the topic. Simple TypeScript / Python wrappers around LLMs and allowing for maintaining conversation are already harnesses. Agentic SDKs for the biggest LLM providers (e.g. OpenAI Agents SDK, Claude Agent SDK) are also harnesses, which keep their engines in the cloud. Solutions like LangGraph or CrewAI were often called "agent frameworks", for they allowed some kind of repetitive patterns. Currently the hottest ones are of course harnesses mostly aimed at coding, but which can be safely thrown at other types of tasks: Codex, Claude Code, OpenCode or PI.
+
+Their default architecture assumes that skills are statically injected at the beginning of a conversation / thread. The LLM endpoint is in the center and the whole machinery makes sure that the LLM will meet its goal - through task lists and loops. **None of these harnesses is really built in such a way that the actual source of agency comes from an external graph**, where each turn injects exactly one operating card; the prior card is evicted; routing and step execution are read from graph data; traversal traces are written back to the graph.
+
+* Pydantic AI, OpenAI Agents SDK, LangGraph, Google ADK, Haystack, and Semantic Kernel - all of which are customizable fits rather than native fits. They expose enough hooks, dynamic tool surfaces, interruption/approval mechanisms, session state, and tracing that you can build your loop without forking core code, but **you still have to build the graph-card interpreter yourself**.
+* **Pydantic AI** is the strongest documented match for **per-step tool exposure** and **dynamic toolset assembly**: its docs explicitly say toolsets can be "swapped out at runtime," can be generated from run context, and can be filtered or modified "for that step" via `prepare_tools`; it also has `ApprovalRequiredToolset`, deferred tools, and durable-execution integrations. 
+* **OpenAI Agents SDK** is strong on **approval gates**, **sessions**, **run snapshots**, **trace hooks**, and **runtime prompt/tool filtering**, including conditional tool enabling and prompts that can dynamically configure instructions and tools. 
+* **LangGraph** is the strongest fit if you want to own the whole runtime: it gives you durable checkpoints, interrupts, middleware that can modify prompt/tools/messages per model call, and explicit state, but it **does not natively externalize control flow to graph data** - you have to compile or interpret that yourself.
+
+
+Basic steps the main loop should include:
+* resolve concept
+* load one graph-owned operating card
+* execute only routes allowed by that card
+* answer from card + route evidence
+* write trace back to graph
+
+### Code template for main loop:
+
+```python
+
+class AgentOrchestrator:
+	async def handle_user_message(self, conversation_id: str, content: str) -> dict:
+  
+	  user_message = store.save_message(conversation_id, "user", content)
+	  recent_messages = store.recent_messages(conversation_id)
+	  prior_route_context = store.recent_route_context(conversation_id)
+
+	  intent = await llm.resolve_intent(
+		  user_message=content,
+		  recent_messages=recent_messages,
+		  prior_route_context=prior_route_context,
+	  )
+
+	  focus_node = await graph.resolve_node(
+		  user_message=content,
+		  intent=intent,
+		  context=prior_route_context,
+	  )
+
+	  if focus_node is None:
+		  answer = await llm.answer_without_graph(content, recent_messages)
+		  return await self.save_answer_and_trace(user_message, answer)
+
+	  card = await graph.resolve_agent_operating_card(
+		  node_id=focus_node.id,
+		  intent=intent.name,
+		  inputs=intent.inputs,
+		  trace_refs=store.recent_trace_refs(focus_node.id),
+	  )
+
+	  if card.missing_inputs:
+		  answer = f"Which value should I use for `{card.missing_inputs[0]}`?"
+		  return await self.save_answer_and_trace(
+			  user_message,
+			  answer,
+			  card=card,
+			  outcome="needs_input",
+		  )
+
+	  route = await self.choose_route(card, intent, content)
+
+	  if route is None:
+		  answer = await llm.answer_from_card_only(content, recent_messages, card)
+		  return await self.save_answer_and_trace(user_message, answer, card=card)
+
+	  if route.access_mode == "approval_required":
+		  answer = f"This needs approval before I run it: {route.description}."
+		  return await self.save_answer_and_trace(
+			  user_message,
+			  answer,
+			  card=card,
+			  route=route,
+			  outcome="needs_approval",
+		  )
+
+	  step_results = {}
+
+	  for step in route.sequence:
+		  if step.kind == "deterministic_template":
+			  step_results[step.id] = await executors.run_template(
+				  executor=step.executor,
+				  template_ref=step.template_ref,
+				  inputs=card.inputs,
+				  previous_results=step_results,
+			  )
+
+		  elif step.kind == "sub_prompt":
+			  step_results[step.id] = await llm.run_sub_prompt(
+				  prompt_ref=step.prompt_ref,
+				  inputs=step_results,
+				  card=card,
+			  )
+
+		  elif step.kind == "sub_agent":
+			  step_results[step.id] = await sub_agents.run(
+				  agent_ref=step.agent_ref,
+				  inputs=step_results,
+				  card=card,
+			  )
+
+		  else:
+			  raise UnsupportedGraphStep(step.kind)
+
+	  answer = await llm.answer(
+		  user_message=content,
+		  recent_messages=recent_messages,
+		  operating_card=card,
+		  route=route,
+		  step_results=step_results,
+	  )
+
+	  return await self.save_answer_and_trace(
+		  user_message,
+		  answer,
+		  card=card,
+		  route=route,
+		  step_results=step_results,
+		  outcome="success",
+	  )
+
+```
+
+
+
+
+## Some ending thoughts
+Let me be clear:
+* I am not enforcing you to use ontologies - in fact many organizations are scared of it. You may safely land on property graphs.
+* I am not making you see graphs everywhere (although I personally do) - I just encourage you to link business concepts directly with agent operating cards and agent traces.
+* I am telling you to play with various LLMs and compare alternatives.
+

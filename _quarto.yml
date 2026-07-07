@@ -1,0 +1,28 @@
+project:
+  type: website
+
+website:
+  title: "Albert Hupa"
+  site-url: "https://alberthupa.github.io"
+  repo-url: "https://github.com/alberthupa/alberthupa.github.io"
+  navbar:
+    left:
+      - href: index.md
+        text: Home
+      - href: semantic-access-pattern/
+        text: Semantic access pattern
+      - href: agent-operating-cards/
+        text: Agent operating cards
+      - href: memory-as-an-editable-artifact/
+        text: Memory as artifact
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-copy: true
+    anchor-sections: true
+
+execute:
+  freeze: auto

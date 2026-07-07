@@ -1,0 +1,19 @@
+:root {
+  --body-width: 760px;
+}
+
+body {
+  line-height: 1.65;
+}
+
+.navbar-title {
+  font-weight: 700;
+}
+
+main.content {
+  font-size: 1.04rem;
+}
+
+pre code {
+  font-size: 0.9rem;
+}
