@@ -1,7 +1,0 @@
----
-title: "Agent operating cards"
-description: "A draft placeholder for a future note on graph-owned execution guidance for agents."
-date: 2026-07-07
----
-
-This page is reserved for a future article.

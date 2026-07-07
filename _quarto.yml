@@ -11,10 +11,6 @@ website:
         text: Home
       - href: semantic-access-pattern/
         text: Semantic access pattern
-      - href: agent-operating-cards/
-        text: Agent operating cards
-      - href: memory-as-an-editable-artifact/
-        text: Memory as artifact
 
 format:
   html:

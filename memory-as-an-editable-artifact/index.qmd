@@ -1,7 +1,0 @@
----
-title: "Memory as an editable artifact"
-description: "A draft placeholder for a future note on treating agent memory as inspectable, editable operational context."
-date: 2026-07-07
----
-
-This page is reserved for a future article.
