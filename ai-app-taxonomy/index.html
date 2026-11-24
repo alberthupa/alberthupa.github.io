@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI app taxonomy</title>
+<meta name="description" content="A map of AI app architectures: 6 units of work across, 10 control topologies down, with named app families at their coordinates. Is the LLM the centre of the app, or one step in it?">
+<meta name="author" content="Albert Hupa">
+<link rel="canonical" href="https://alberthupa.github.io/ai-app-taxonomy/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Is the LLM the centre of your app, or one step in it?">
+<meta property="og:description" content="A map of AI app architectures: what owns the work, and what shape one run takes. 32 named families at their coordinates.">
+<meta property="og:url" content="https://alberthupa.github.io/ai-app-taxonomy/">
+<meta property="og:image" content="https://alberthupa.github.io/ai-app-taxonomy/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: the matrix is the page. Columns = unit of work, split by who decides the next
+   step (human / LLM loop / code). Rows = topology of one run. A heavy seam runs between
+   "LLM in the centre" (copper) and "code in the centre" (slate). */
+:root{
+  color-scheme:light;
+  --paper:#F7F5F0; --card:#FFFFFF; --ink:#1E1B16; --muted:#6B655C;
+  --rule:#E6E0D4; --edge:#D9D3C7; --edge-strong:#C4BBA9;
+  --loop:#B04A2E; --proc:#2F6B8A; --human:#8C8578; --topo:#7A3E8F; --model:#B04A2E;
+  --loop-bg:#FCF6F3; --loop-hero:#F8EAE4; --proc-bg:#F3F7F9; --proc-hero:#E5EEF3; --human-bg:#FAF9F6;
+  --fit:#3C7D4E; --note:#A5761B; --clash:#B04A2E;
+  --sans:Inter,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --glyph-hollow:#FFFFFF; --gh:48px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:var(--sans);font-size:14px;line-height:1.5;padding:18px 24px 48px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+a{color:inherit;text-decoration-color:var(--edge-strong);text-underline-offset:2px}
+a:hover{text-decoration-color:currentColor}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* header: kept small on purpose */
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px 28px;flex-wrap:wrap}
+.top h1{font-size:clamp(22px,2.3vw,30px);line-height:1.12;letter-spacing:-.022em;font-weight:800;margin:0;text-wrap:balance}
+.top p{margin:5px 0 0;max-width:98ch;font-size:13.5px;color:#3A352D}
+.top p b.l{color:var(--loop)} .top p b.p{color:var(--proc)}
+.credit{text-align:right;font-size:12px;line-height:1.45;flex:0 0 auto}
+.credit b{display:block;font-weight:700}
+.credit a{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+/* matrix */
+.mxwrap{border:1px solid var(--edge-strong);border-radius:6px;background:var(--card)}
+@media (max-width:1340px){.mxwrap{overflow-x:auto}}
+.mx{display:grid;min-width:1270px;
+  grid-template-columns:30px 166px minmax(132px,.72fr) minmax(172px,1fr) minmax(214px,1.3fr) minmax(214px,1.3fr) minmax(172px,1fr) minmax(172px,1fr)}
+.mx>*{border-left:1px solid var(--rule);border-top:1px solid var(--rule);min-width:0}
+.mx>.c1{border-left:0}
+.mx>.r1{border-top:0}
+.mx>.gstart{border-left-color:var(--edge-strong)}
+.mx>.seam{border-left:2.5px solid var(--ink)}
+.g-human{background:var(--human-bg)} .g-loop{background:var(--loop-bg)} .g-process{background:var(--proc-bg)}
+.g-loop.hero{background:var(--loop-hero)} .g-process.hero{background:var(--proc-hero)}
+
+.corner{background:var(--card);position:sticky;top:0;z-index:4;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;
+  font-size:11px;line-height:1.35;color:var(--muted)}
+.corner b{display:block;color:var(--ink);font-size:12px}
+.corner .cc{text-align:right}
+.gband{position:sticky;top:0;z-index:3;padding:8px 12px 7px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.gband b{font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:800}
+.gband span{display:block;font-size:11.5px;line-height:1.3;color:#3A352D;text-wrap:balance}
+.gband.g-human b{color:#5F594F} .gband.g-loop b{color:var(--loop)} .gband.g-process b{color:var(--proc)}
+.gband.g-loop{background:var(--loop-hero)} .gband.g-process{background:var(--proc-hero)}
+.uhead{position:sticky;top:var(--gh);z-index:3;padding:8px 10px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;
+  color:#4A453D;box-shadow:0 1px 0 var(--edge-strong)}
+.uhead b{font-size:13px;line-height:1.2;font-weight:750;color:var(--ink);margin-top:2px}
+.uhead.hero b{font-size:15.5px;letter-spacing:-.01em}
+.uhead .ctr{font-size:11.5px;line-height:1.3;color:var(--ink);text-wrap:balance}
+.uhead.hero .ctr{font-weight:600}
+.uhead .own{font-size:10.5px;line-height:1.3;color:var(--muted)}
+.blabel{background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--topo)}
+.blabel span{writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;white-space:nowrap}
+.mx>.bfirst{border-top-color:var(--edge-strong)}
+.thead{background:var(--card);padding:9px 8px 9px 10px;display:grid;grid-template-columns:50px 1fr;gap:0 8px;align-items:center;color:var(--topo)}
+.thead .glyph{grid-row:1 / span 2}
+.thead b{font-size:12px;line-height:1.2;font-weight:700;color:var(--ink);align-self:end}
+.thead span{font-size:10.5px;line-height:1.25;color:var(--muted);align-self:start}
+.cell{position:relative;padding:7px;display:flex;flex-direction:column;gap:6px;min-height:66px}
+.hl{background-image:linear-gradient(rgba(30,27,22,.055),rgba(30,27,22,.055))}
+.cell.hl-u.hl-t{background-image:linear-gradient(rgba(30,27,22,.12),rgba(30,27,22,.12))}
+
+.chip{font:inherit;text-align:left;color:var(--ink);background:var(--card);border:1px solid var(--edge);border-radius:8px;
+  padding:6px 9px 7px;cursor:pointer;display:flex;flex-direction:column;gap:2px;width:100%;transition:border-color .12s,box-shadow .12s}
+.chip:hover{border-color:var(--edge-strong);box-shadow:0 1px 5px rgba(30,27,22,.1)}
+.chip.sel{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.chip .cn{font-size:12.5px;font-weight:700;line-height:1.22;letter-spacing:-.005em;display:flex;gap:6px}
+.chip .dot{flex:0 0 auto;width:7px;height:7px;border-radius:50%;margin-top:4.5px}
+.chip .ce{font-size:10.5px;line-height:1.3;color:var(--muted);padding-left:13px}
+.chip .ct{align-self:flex-start;margin:2px 0 0 13px;font-size:9.5px;font-weight:600;color:#4A453D;background:rgba(30,27,22,.07);border-radius:4px;padding:0 5px}
+.mk{display:inline-grid;place-items:center;width:14px;height:14px;border-radius:50%;color:#fff;font-size:9px;font-weight:800;line-height:1;flex:0 0 auto}
+.mk.fit{background:var(--fit)} .mk.note{background:var(--note)} .mk.clash{background:var(--clash)}
+.ghost{font:inherit;text-align:left;background:none;cursor:pointer;border:1px dashed transparent;border-radius:8px;color:var(--muted)}
+.ghost:hover,.ghost:focus-visible{border-color:var(--edge-strong)}
+.ghost.sel{border:1px solid var(--ink)}
+.ghost.ruled{padding:5px 7px;display:flex;gap:6px;align-items:flex-start;font-size:10.5px;line-height:1.35;width:100%}
+.ghost.ruled .mk{margin-top:1px}
+.ghost.ruled b{display:block;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#4A453D;font-weight:700}
+.ghost.silent{position:absolute;inset:3px;padding:0;font-size:10px;color:transparent}
+.ghost.silent:hover,.ghost.silent:focus-visible,.ghost.silent.sel{color:var(--muted)}
+
+/* under the matrix */
+.under{display:flex;justify-content:space-between;align-items:flex-start;gap:10px 24px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.under .lg{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;padding-top:4px}
+.under .lg span{display:inline-flex;align-items:center;gap:5px}
+.under .lg i{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--model)}
+.offcard{font:inherit;text-align:left;color:var(--ink);cursor:pointer;max-width:520px;background:transparent;
+  border:1.5px dashed var(--edge-strong);border-radius:10px;padding:7px 12px;display:grid;grid-template-columns:22px 1fr;gap:0 9px}
+.offcard:hover{background:var(--card)}
+.offcard.sel{border-style:solid;border-color:var(--ink);background:var(--card)}
+.offcard .aicon{grid-row:1 / span 2;margin-top:2px;color:var(--muted)}
+.offcard b{font-size:12.5px}
+.offcard b em{font-style:normal;font-weight:600;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-left:8px}
+.offcard span{font-size:11.5px;color:#3A352D;line-height:1.4}
+
+/* detail dock */
+.dock{position:sticky;bottom:8px;z-index:6;background:var(--card);border:1px solid var(--edge-strong);border-radius:12px;
+  box-shadow:0 10px 34px rgba(30,27,22,.16);padding:11px 16px 13px}
+@media (max-height:820px),(max-width:900px){.dock{position:static}.corner,.gband,.uhead{position:static}}
+.dhead{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;margin-bottom:8px}
+.dhead .glyph{color:var(--topo);flex:0 0 auto}
+.dhead h2{margin:0;font-size:17px;letter-spacing:-.015em;font-weight:750;line-height:1.2}
+.pill{font-size:11px;font-weight:600;border-radius:999px;padding:2px 10px;display:inline-flex;gap:6px;align-items:center;white-space:nowrap;border:1px solid var(--edge)}
+.pill.loop{background:var(--loop-hero);color:#8A3620;border-color:transparent}
+.pill.process{background:var(--proc-hero);color:#1F4F68;border-color:transparent}
+.pill.human{background:#EFEDE7;color:#4A453D;border-color:transparent}
+.pill.topo{background:rgba(122,62,143,.1);color:#5E2D70;border-color:transparent}
+.dgrid{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:18px}
+@media (max-width:900px){.dgrid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.dgrid{grid-template-columns:1fr}}
+.dgrid h3{margin:0 0 3px;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.dgrid p{margin:0;font-size:12.5px;line-height:1.45}
+.dgrid p+p{margin-top:4px}
+.dgrid p.sm{font-size:11.5px;color:var(--muted)}
+.dgrid ul{margin:0;padding-left:15px;font-size:12.5px;line-height:1.4}
+.dgrid li+li{margin-top:2px}
+.exs{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.exs>*{font-size:11px;background:#F3F0E9;border:1px solid var(--edge);border-radius:5px;padding:1px 7px;color:#4A453D;text-decoration:none}
+.exs a:hover{border-color:var(--ink);color:var(--ink)}
+.exs a::after{content:' ↗';color:var(--muted);font-size:9.5px}
+
+/* footnotes: small on purpose */
+footer{margin-top:10px;border-top:1px solid var(--edge);padding-top:12px;font-size:11.5px;color:var(--muted);line-height:1.55;
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px 26px}
+@media (max-width:900px){footer{grid-template-columns:1fr}}
+footer p{margin:0}
+footer b{color:#3A352D}
+footer .src{grid-column:1 / -2}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>Every AI app is a unit of work with a shape</h1>
+      <p>Columns say what owns the work. Rows say what shape one run takes. The heavy line down the middle is the one that matters most: left of it <b class="l">the LLM's loop decides what happens next</b>, right of it <b class="p">code decides, and the LLM is one step inside it</b>.</p>
+    </div>
+    <div class="credit">
+      <b><a href="/" style="font:inherit;color:inherit">Albert Hupa</a></b>
+      <a href="mailto:hupa.albert@gmail.com">hupa.albert@gmail.com</a>
+    </div>
+  </header>
+
+  <section id="map">
+    <div class="mxwrap"><div class="mx" id="mx" role="group"></div></div>
+    <div class="under" style="margin:10px 0 12px">
+      <div class="lg" id="legend"></div>
+      <div id="off"></div>
+    </div>
+    <div class="dock" id="dock"></div>
+  </section>
+
+  <footer>
+    <p><b>One unit, many runs.</b> <span id="hinge"></span></p>
+    <p><b>The batch trap.</b> <span id="batch"></span></p>
+    <p><b>Silence is not a verdict.</b> <span id="silence"></span></p>
+    <div class="credit">
+      <b>Albert Hupa</b>
+      <a href="mailto:hupa.albert@gmail.com">hupa.albert@gmail.com</a>
+    </div>
+    <p class="src">Product names are examples of a family, written as text. Pattern references: <span id="srcs"></span></p>
+  </footer>
+</div>
+
+<script src="taxonomy_data.js"></script>
+<script src="taxonomy_glyphs.js"></script>
+<script>
+(function () {
+  var T = window.TAXONOMY, G = window.TAXONOMY_GLYPH;
+  var GCOL = {human: 'var(--human)', loop: 'var(--loop)', process: 'var(--proc)'};
+  var SYM = {fit: '✓', note: '!', clash: '×'};
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]; }); }
+  function $(id) { return document.getElementById(id); }
+  function find(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return null; }
+  function rel(u, t) { for (var i = 0; i < T.rel.length; i++) if (T.rel[i].u === u && T.rel[i].t === t) return T.rel[i]; return null; }
+  function mark(r) { return '<span class="mk ' + r.k + '" title="' + esc(T.relLabel[r.k]) + '">' + SYM[r.k] + '</span>'; }
+  function exs(list) {
+    return '<div class="exs">' + list.map(function (n) {
+      var u = T.links[n];
+      return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(n) + '</a>' : '<span>' + esc(n) + '</span>';
+    }).join('') + '</div>';
+  }
+
+  /* ---------- matrix ---------- */
+  var h = '', nFam = 0, nRuled = 0, nSilent = 0;
+  h += '<div class="corner c1 r1" style="grid-row:1 / span 2;grid-column:1 / span 2">' +
+    '<div class="cc"><b>' + esc(T.axes.unit.title) + ' →</b>' + esc(T.axes.unit.q) + '</div>' +
+    '<div><b>' + esc(T.axes.topology.title) + ' ↓</b>' + esc(T.axes.topology.q) + '</div></div>';
+
+  /* group bands + unit heads */
+  var colCls = {}, col = 3;
+  T.groups.forEach(function (g) {
+    var us = T.units.filter(function (u) { return u.group === g.id; });
+    var edge = g.id === 'process' ? ' seam' : ' gstart';
+    h += '<div class="gband r1 g-' + g.id + edge + '" style="grid-row:1;grid-column:' + col + ' / span ' + us.length + '"><b>' + esc(g.name) + '</b><span>' + esc(g.idea) + '</span></div>';
+    us.forEach(function (u, i) {
+      colCls[u.id] = 'g-' + g.id + (u.hero ? ' hero' : '') + (i === 0 ? edge : '');
+    });
+    col += us.length;
+  });
+  T.units.forEach(function (u, ui) {
+    h += '<div class="uhead ' + colCls[u.id] + '" data-u="' + u.id + '" style="grid-row:2;grid-column:' + (ui + 3) + '">' +
+      G.anatomy(u.id, u.hero ? 132 : 112) + '<b>' + esc(u.name) + '</b><span class="ctr">' + esc(u.centre) + '</span><span class="own">' + esc(u.line) + '</span></div>';
+  });
+
+  /* bucket labels + topology rows */
+  var row = 3, bfirst = {};
+  T.buckets.forEach(function (b) {
+    var n = T.topologies.filter(function (t) { return t.bucket === b.id; }).length;
+    bfirst[row] = true;
+    h += '<div class="blabel c1 bfirst" style="grid-column:1;grid-row:' + row + ' / span ' + n + '" title="' + esc(b.idea) + '"><span>' + esc(b.name) + '</span></div>';
+    row += n;
+  });
+  T.topologies.forEach(function (t, ti) {
+    var r0 = ti + 3, bf = bfirst[r0] ? ' bfirst' : '';
+    h += '<div class="thead' + bf + '" data-t="' + t.id + '" style="grid-row:' + r0 + ';grid-column:2">' + G.topology(t.id, 50) +
+      '<b>' + esc(t.name) + '</b><span>' + esc(t.sub) + '</span></div>';
+    T.units.forEach(function (u, ui) {
+      var r = rel(u.id, t.id), inner = '';
+      T.families.forEach(function (f, fi) {
+        if (f.u !== u.id || f.t !== t.id) return;
+        nFam++;
+        inner += '<button type="button" class="chip" data-f="' + fi + '"><span class="cn"><i class="dot" style="background:' + GCOL[u.group] + '"></i>' + esc(f.n) + '</span>' +
+          '<span class="ce">' + esc(f.ex.slice(0, 3).join(' · ')) + '</span>' +
+          (f.note ? '<span class="ct">' + esc(f.note) + '</span>' : '') + '</button>';
+      });
+      if (!inner && r) {
+        nRuled++;
+        inner = '<button type="button" class="ghost ruled" data-pu="' + u.id + '" data-pt="' + t.id + '">' + mark(r) +
+          '<span><b>' + esc(T.relLabel[r.k]) + '</b>' + esc(r.why) + '</span></button>';
+      } else if (!inner) {
+        nSilent++;
+        inner = '<button type="button" class="ghost silent" data-pu="' + u.id + '" data-pt="' + t.id + '" aria-label="' +
+          esc(u.name + ' × ' + t.name + ': no rule claimed') + '">no rule claimed</button>';
+      }
+      h += '<div class="cell ' + colCls[u.id] + bf + '" data-u="' + u.id + '" data-t="' + t.id + '" style="grid-row:' + r0 + ';grid-column:' + (ui + 3) + '">' + inner + '</div>';
+    });
+  });
+  var mx = $('mx');
+  mx.innerHTML = h;
+  mx.setAttribute('aria-label', T.units.length + ' units of work across, ' + T.topologies.length + ' topologies down; ' + nFam +
+    ' named app families placed at their coordinates, plus trained policy off the map.');
+
+  $('legend').innerHTML = '<span><i></i>the LLM, drawn the same in every column</span>' +
+    '<span>' + nFam + ' named families</span>' +
+    ['fit', 'note', 'clash'].slice(1).map(function (k) { return '<span>' + mark({k: k}) + esc(T.relLabel[k]) + '</span>'; }).join('') +
+    '<span>' + nSilent + ' cells with no claim either way</span>';
+  $('off').innerHTML = '<button type="button" class="offcard" id="offcard">' + G.icon('weights', 22) +
+    '<b>' + esc(T.displaced.n) + '<em>off the map · not another column</em></b>' +
+    '<span>' + esc(T.displaced.line) + ', so it displaces the map instead of sitting on it. ' + esc(T.displaced.ex.join(' · ')) + '</span></button>';
+  $('hinge').textContent = T.meta.hinge;
+  $('batch').textContent = T.meta.batch;
+  $('silence').textContent = T.meta.silence;
+  $('srcs').innerHTML = T.sources.map(function (s) { return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.name) + '</a>'; }).join(' · ');
+
+  /* sticky column heads sit under the group band */
+  function measure() {
+    var b = mx.querySelector('.gband');
+    if (b) mx.style.setProperty('--gh', b.offsetHeight + 'px');
+  }
+  measure();
+  window.addEventListener('resize', measure);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+
+  /* ---------- detail dock ---------- */
+  function gname(u) { return find(T.groups, u.group).name; }
+  function pills(u, t, r) {
+    return '<span class="pill ' + u.group + '">' + esc(u.name) + '</span>' +
+      '<span class="pill topo">' + esc(t.name) + '</span>' +
+      (r ? '<span class="pill">' + mark(r) + esc(T.relLabel[r.k]) + '</span>' : '');
+  }
+  function colU(u) {
+    return '<div><h3>Unit of work · ' + esc(gname(u)) + '</h3><p>' + esc(u.centre) + ' Owned by ' + esc(u.owner) + '.</p><p class="sm">Survives a crash: ' + esc(u.persists) + '.</p></div>';
+  }
+  function colT(t, note) {
+    return '<div><h3>Shape of one run</h3><p>' + esc(t.what) + '</p>' + (note ? '<p class="sm">Here: ' + esc(note) + '.</p>' : '') + '</div>';
+  }
+  function breaks(items) {
+    return '<div><h3>What breaks</h3><ul>' + items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
+  }
+  function render(s) {
+    var html, u, t, r;
+    if (s.t === 'f') {
+      var f = T.families[s.i];
+      u = find(T.units, f.u); t = find(T.topologies, f.t); r = rel(f.u, f.t);
+      html = '<div class="dhead">' + G.topology(t.id, 48) + '<h2>' + esc(f.n) + '</h2>' + pills(u, t, r) + '</div><div class="dgrid">' +
+        '<div><h3>What it is</h3><p>' + esc(f.why) + '</p>' + exs(f.ex) + '</div>' +
+        colU(u) + colT(t, f.note) + breaks((f.warn ? [f.warn] : []).concat([u.fail + '.', t.fail])) + '</div>';
+    } else if (s.t === 'p') {
+      u = find(T.units, s.u); t = find(T.topologies, s.tp); r = rel(s.u, s.tp);
+      html = '<div class="dhead">' + G.topology(t.id, 48) + '<h2>' + esc(u.name) + ' × ' + esc(t.name) + '</h2>' + pills(u, t, r) + '</div><div class="dgrid">' +
+        '<div><h3>This pair</h3><p>' + (r ? esc(r.why) : 'No rule is claimed for this pair.') + '</p>' +
+        '<p class="sm">No named family is documented here. Silence is not a verdict.</p></div>' +
+        colU(u) + colT(t) + breaks([u.fail + '.', t.fail]) + '</div>';
+    } else {
+      var d = T.displaced;
+      html = '<div class="dhead">' + G.icon('weights', 28) + '<h2>' + esc(d.n) + '</h2><span class="pill">off the map</span></div><div class="dgrid">' +
+        '<div><h3>What it is</h3><p>' + esc(d.why) + '</p>' + exs(d.ex) + '</div>' +
+        '<div><h3>Unit of work</h3><p>Owned by ' + esc(d.owner) + '.</p><p class="sm">Survives a crash: ' + esc(d.persists) + '.</p></div>' +
+        '<div><h3>Shape of one run</h3><p>' + esc(d.shift) + '</p></div>' +
+        breaks(d.fails.map(function (x) { return x + '.'; })) + '</div>';
+    }
+    $('dock').innerHTML = html;
+    var hu = s.t === 'f' ? T.families[s.i].u : s.u, ht = s.t === 'f' ? T.families[s.i].t : s.tp;
+    Array.prototype.forEach.call(mx.querySelectorAll('[data-u],[data-t]'), function (el) {
+      var a = !!hu && el.getAttribute('data-u') === hu, b = !!ht && el.getAttribute('data-t') === ht;
+      el.classList.toggle('hl-u', a); el.classList.toggle('hl-t', b); el.classList.toggle('hl', a || b);
+    });
+  }
+  function selOf(el) {
+    if (!el || !el.closest) return null;
+    var b = el.closest('.chip,.ghost,.offcard');
+    if (!b) return null;
+    if (b.classList.contains('chip')) return {t: 'f', i: +b.getAttribute('data-f'), el: b};
+    if (b.classList.contains('ghost')) return {t: 'p', u: b.getAttribute('data-pu'), tp: b.getAttribute('data-pt'), el: b};
+    return {t: 'd', el: b};
+  }
+
+  var first = 0;
+  T.families.forEach(function (f, i) { if (f.n === 'Coding harness') first = i; });
+  var pinned = {t: 'f', i: first, el: mx.querySelector('.chip[data-f="' + first + '"]')};
+  function pin(s) {
+    if (pinned.el) pinned.el.classList.remove('sel');
+    pinned = s; s.el.classList.add('sel'); render(s);
+  }
+  var map = $('map');
+  map.addEventListener('click', function (e) { var s = selOf(e.target); if (s) pin(s); });
+  map.addEventListener('mouseover', function (e) { var s = selOf(e.target); if (s) render(s); });
+  map.addEventListener('focusin', function (e) { var s = selOf(e.target); if (s) render(s); });
+  map.addEventListener('mouseout', function (e) { if (selOf(e.target) && !selOf(e.relatedTarget)) render(pinned); });
+  map.addEventListener('focusout', function (e) { if (selOf(e.target) && !selOf(e.relatedTarget)) render(pinned); });
+  pin(pinned);
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 project:
   type: website
+  resources:
+    - "ai-app-taxonomy/**"
 
 website:
   title: "Albert Hupa"
@@ -11,6 +13,8 @@ website:
         text: Home
       - href: semantic-access-pattern/
         text: Semantic access pattern
+      - href: ai-app-taxonomy/index.html
+        text: AI app taxonomy
 
 format:
   html:

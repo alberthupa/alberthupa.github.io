@@ -14,3 +14,4 @@ I write about AI agents, knowledge graphs, semantic layers, and enterprise AI ar
 ## Published
 
 - [Rethinking agents in the age of knowledge graphs](semantic-access-pattern/)
+- [AI app taxonomy: is the LLM the centre of your app, or one step in it?](ai-app-taxonomy/index.html) (interactive map)
